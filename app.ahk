@@ -1,122 +1,55 @@
-; #################################
-;         I n c l u d e s
-; #################################
+; ################################# ################################# #################################
+;                           				  N  o  t  e  s
+; Make GUI appear on Screen one. Maybe top-right corner. Under everything, but above desktop.
+; After x time, make GUI on top of everything until clicked.
+; ################################# ################################# #################################
+#SingleInstance, force
+SetBatchLines, -1
+
+#Include %A_ScriptDir%\node_modules
 #Include biga.ahk\export.ahk
-
-; #################################
-;           G l o b a l s
-; #################################
-
-#SingleInstance,Force
-#Persistent
-CoordMode, Pixel, Screen
-Global b = 0
-Global Satdy = 0
-Global Sundy = 0
-Global Mondy = 0
-Global Tuedy = 0
-Global Weddy = 0
-Global Thudy = 0
-Global Fridy = 0
-Global daynum = 0
-Global dayday = 0
-Global NewDY = -1
-Global ND = 0
-Global Loo = 1
-Global k = 0
-Global tstv4 = 0
-Global index = 1
-Global tstv5 := daysVar[5].tasks
-Global Taday := NDY0
-Global curdy = 0
-Global burdy = 0
- FormatTime, curdy ,,yyyyMMd000000
- burdy := curdy
-Global weekdayname = 0
-Global dayName = 0
-Global dayNumber = 0
-Global tstv1 = 20220706000000
-Global tstv2 = 20220712
-Global tstv3 = 20220700
-Global matchingEntry = 0
-Global fridaysVar = 0
-Setdaynum()
-Namedaynum()
-
-; #################################
-;              G U I
-; #################################
-msgbox Control + T to bring up the GUI.
-^T::
-    WinGet, active_id, ID, A
-    Menu, Tray, Tip, % "Memberry, 'member?"
-    Gui, MemGUI:+LastFound +ToolWindow -Caption +AlwaysOnTop ; Added
-    Gui, MemGUI:Color, 10191A
-    WinSet, TransColor, 10191A 221 ; Added
-    Gui, MemGUI:Margin, 5, 5
-    Gui, MemGUI:Add, Picture, x0 y%NewDY% w200 h150 Disabled hwnd%ND%BGHwnd v%ND%BG g%ND%BG, Icons\Today.png
-    Gui, MemGUI:Add, Picture, x0 yp+150 w200 h10 hwndMinus%ND%Hwnd vMinus%ND% gMinus%ND%, Icons\Remove.png
-        GuiControl, MemGUI:, Minus%ND%,
-    Gui, MemGUI:Add, Picture, x0 yp w200 h10 hwndPlus%ND%Hwnd vPlus%ND% gPlus%ND%, Icons\Add.png
-    Gui, MemGUI:Font, S14, Tahoma
-    Gui, MemGUI:Add, Text, x7 yp-146 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, %dayday%
-    Gui, MemGUI:Font, S10, Tahoma
-    Gui, MemGUI:Add, Text, x+3 yp+7 h20 BackgroundTrans hwndText%ND%2Hwnd vText%ND%2 gText%ND%2, (Today)
-
-    Gui, MemGUI:Font, S12, Tahoma
-    Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%1Hwnd vChckbx%ND%1 gChckbx%ND%1, Icons\ChckbxN.png
-    Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%1Hwnd vTxt%ND%1 gTxt%ND%1, No Results Found.
-    Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%2Hwnd vChckbx%ND%2 gChckbx%ND%2, Icons\ChckbxN.png
-    Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%2Hwnd vTxt%ND%2 gTxt%ND%2, No Results Found.
-    Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%3Hwnd vChckbx%ND%3 gChckbx%ND%3, Icons\ChckbxN.png
-    Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%3Hwnd vTxt%ND%3 gTxt%ND%3, No Results Found.
-    Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%4Hwnd vChckbx%ND%4 gChckbx%ND%4, Icons\ChckbxN.png
-    Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%4Hwnd vTxt%ND%4 gTxt%ND%4, No Results Found.
-    Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%5Hwnd vChckbx%ND%5 gChckbx%ND%5, Icons\ChckbxN.png
-    Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%5Hwnd vTxt%ND%5 gTxt%ND%5, No Results Found.
-    ND++
-    Gui, MemGUI:Show, x1721 y0 w200 h1080
-
-    
-return
+A := new biga() ; requires https://github.com/biga-ahk/biga.ahk
 
 
+OutputDebug, Script Start
+Global selectedDay := 0
+Global burdy := 0
+FormatTime, selectedDay ,,yyyyMMdd
+burdy := selectedDay
+;FormatTime, TimeString, 20050423220133, dddd MMMM d, yyyy hh:mm:ss tt
+;MsgBox %selectedDay%
+;msgbox YYYYMMDDHH24MISS = %YYYYMMDDHH24MISS%
+Global weekdayname := 0
+Global dayName := 0
+Global dayNumber := 0
+Global tstv1 := 20220706000000
+Global tstv2 := 20220712
+Global tstv3 := 20220700
+Global matchingEntry := 0
+Global fridaysVar := 0
 ; #################################
 ;           A r r a y s
 ; #################################
+
 ; Now to figure out how to efficiently push the objects/elements to each 'next' node, if there is something already in the first.
 tasksVar :={1: "Do the dishes", 2: "Clean the fishtank", 3: "Sleep longer", 4: "Do some coding", 5: "Start the working week", 6: "Gaming day, every Saturday.", 7: "Play the violin"}
-
-A := new biga() ; requires https://github.com/biga-ahk/biga.ahk
 
 daysVar := [{"day": 20220708, "name": "Friday", "tasks": "This is past-tense for data."}
         , {"day": 20220709, "name": "Saturday", "tasks": "This is also past-tense for data."}
         , {"day": 20220710, "name": "Sunday", "tasks": tasksVar[2]}
         , {"day": 20220711, "name": "Monday", "tasks": "Start of the working week."}
         , {"day": 20220712, "name": "Tuesday", "tasks": "nah"}
-        , {"day": 20220713, "name": "Wednesday", "tasks": "cope"}
+        , {"day": 20220713, "name": "Wednesday", "tasks": "cope|no|touch a computer"}
         , {"day": 20220714, "name": "Thursday", "tasks": "no"}
         , {"day": 20220715, "name": "Friday", "tasks": "End of the week!"}]
 
 
-;=======
-
 allFridaysCopy := A.filter(daysVar, {"name": "Friday"})
-    OutputDebug, % allFridaysCopy.count()
-msgbox, % allFridaysCopy.count()
-; => 2
+OutputDebug, % allFridaysCopy.count()
 
 fridaysTask := A.map(allFridaysCopy, "tasks")
-    OutputDebug, % fridaysTask.tasks
-A.print(fridaysTask)
-; => ["This is past-tense for data.", "End of the week!"]
+OutputDebug, % fridaysTask.tasks
 
-    ;fridaysVar := A.filter(daysVar, {"name": "Friday"})
-    ;A.print(fridaysVar)
-    ;A.print(fridaysVar.tasks)
-return
-
-;=======
 
 ; sort days
 daysVar := A.sortBy(daysVar, "day")
@@ -135,125 +68,74 @@ if (modifiableItem != false) {
     daysVar[index] := modifiableItem
 }
 A.print(daysVar)
-msgbox hi
+
+; #################################
+;           G l o b a l s
+; #################################
+
+#SingleInstance,Force
+#Persistent
+CoordMode, Pixel, Screen
+Global b := 0
+Global Satdy := 0
+Global Sundy := 0
+Global Mondy := 0
+Global Tuedy := 0
+Global Weddy := 0
+Global Thudy := 0
+Global Fridy := 0
+Global daynum := 0
+Global dayday := 0
+Global NewDY := -1
+Global ND := 0
+Global Loo := 1
+Global k := 0
+Global tstv4 := 0
+;Global
+Global index := 1
+Global tstv5 := daysVar[5].tasks
+Global Taday := NDY0
+Setdaynum()
+Namedaynum()
+
+; #################################
+;              G U I
+; #################################
+
+WinGet, active_id, ID, A
+Menu, Tray, Tip, % "Memberry, 'member?"
+Gui, MemGUI:+LastFound +ToolWindow -Caption +AlwaysOnTop ; Added
+Gui, MemGUI:Color, 10191A
+WinSet, TransColor, 10191A 221 ; Added
+Gui, MemGUI:Margin, 5, 5
+Gui, MemGUI:Add, Picture, x0 y%NewDY% w200 h150 Disabled hwnd%ND%BGHwnd v%ND%BG g%ND%BG, Icons\Today.png
+Gui, MemGUI:Add, Picture, x0 yp+150 w200 h10 hwndMinus%ND%Hwnd vMinus%ND% gMinus%ND%, Icons\Remove.png
+GuiControl, MemGUI:, Minus%ND%,
+Gui, MemGUI:Add, Picture, x0 yp w200 h10 hwndPlus%ND%Hwnd vPlus%ND% gPlus%ND%, Icons\Add.png
+Gui, MemGUI:Font, S14, Tahoma
+Gui, MemGUI:Add, Text, x7 yp-146 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, %dayday%
+Gui, MemGUI:Font, S10, Tahoma
+Gui, MemGUI:Add, Text, x+3 yp+7 h20 BackgroundTrans hwndText%ND%2Hwnd vText%ND%2 gText%ND%2, (Today)
+
+Gui, MemGUI:Font, S12, Tahoma
+Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%1Hwnd vChckbx%ND%1 gChckbx%ND%1, Icons\ChckbxN.png
+Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%1Hwnd vTxt%ND%1 gTxt%ND%1, No Results Found.
+Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%2Hwnd vChckbx%ND%2 gChckbx%ND%2, Icons\ChckbxN.png
+Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%2Hwnd vTxt%ND%2 gTxt%ND%2, No Results Found.
+Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%3Hwnd vChckbx%ND%3 gChckbx%ND%3, Icons\ChckbxN.png
+Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%3Hwnd vTxt%ND%3 gTxt%ND%3, No Results Found.
+Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%4Hwnd vChckbx%ND%4 gChckbx%ND%4, Icons\ChckbxN.png
+Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%4Hwnd vTxt%ND%4 gTxt%ND%4, No Results Found.
+Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%5Hwnd vChckbx%ND%5 gChckbx%ND%5, Icons\ChckbxN.png
+Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%5Hwnd vTxt%ND%5 gTxt%ND%5, No Results Found.
+ND++
+Gui, MemGUI:Show, x1721 y0 w200 h1080
 return
 
-;=======
 
-; => {"day": 20220713, "name": "Wednesday", "tasks": "cope"}
-vra := 20220708
-
-    matchingEntry := A.find(daysVar, {"day": tstv2})
-    OutputDebug, % matchingEntry.tasks "hello"
-    msgbox, % matchingEntry.tasks
-    A.print(matchingEntry)
-    return
-
-
-    fridaysVar := A.filter(daysVar, {"name": "Friday"})
-    OutputDebug, % fridaysVar.tasks
-return
-vra++
-
-; => {"day": 20220713, "name": "Wednesday", "tasks": "cope"}
-
-;=======
-
- ;======= The new thing for picking out info =========
- loop 1000{
-    ; This seems to work good to get all tasks in one day. 
-    ; Maybe combine it with 'concat' function further down to list all tasks out properly.
-    ; Start at beginning of 2022. 100,000 loops took 3 seconds. 10,000 took 0.3s. 1,000 loops = 3 years~.
-    For Key, Value in daysVar {
-            if (Value["day"] = tstv3) {
-                if (Value["name"] = "Friday") {
-                ;OutputDebug, % Value["day"] " " Value["tasks"]
-            ;msgbox % Value["day"] " " Value["tasks"]
-                }
-            }
-        }
-        tstv3++
-        ;OutputDebug, %tstv3%
-}
-;msgbox done
-        For Key, Value in daysVar {
-            if (Value["day"] = tstv1) {
-                ;OutputDebug, % Value["day"] " " Value["tasks"]
-           ; msgbox % Value["day"] " " Value["tasks"]
-            }
-        }
-        
-    For Key, Value in daysVar {
-            if (Value["name"] = tstv2) {
-                ;OutputDebug, hello
-            ;OutputDebug, % Value["name"] " " Value["tasks"]
-            ;msgbox % Value["name"] " " Value["tasks"]
-            }
-        }
- ;======= The new thing for picking out info =========
-
-
-; fill every <Saturday> with the activity <"nap">
-    daysVar := fn_fillDays(daysVar, "Wednesday", "Hump day, keep going.")
-    daysVar := fn_fillDays(daysVar, "Saturday", "Gaming day, every Saturday.")
-    daysVar := fn_fillDays(daysVar, "Sunday", "End of the weekend, RIP.")
-
-^P::
-
- loop 1000{
-    ; This seems to work good to get all tasks in one day. 
-    ; Maybe combine it with 'concat' function further down to list all tasks out properly.
-    ; Start at beginning of 2022. 100,000 loops took 3 seconds. 10,000 took 0.3s. 1,000 loops = 3 years~.
-    For Key, Value in daysVar {
-            if (Value["day"] = tstv1) {
-                if (Value["name"] = "Wednesday") {
-                OutputDebug, % Value["day"] " " Value["tasks"]
-           ; msgbox % Value["day"] " " Value["tasks"]
-                }
-            }
-        }
-        tstv1:=tstv1+1000000
-        OutputDebug, %tstv1%
-        ;tstv1++
-}
-
-;msgbox, possum brain
-    For Key, Value in daysVar {
-            if (Value["day"] = tstv1) {
-                ;OutputDebug, % Value["day"] " " Value["tasks"]
-            ;msgbox % Value["day"] " " Value["tasks"]
-            }
-        }
-
-    For Key, Value in daysVar {
-            if (Value["name"] = tstv2) {
-               ; OutputDebug, hello
-            ;OutputDebug, % Value["name"] " " Value["tasks"]
-            }
-        }
-        return
-
-; This will give =>  
-;1:["day":20220708000000, "name":"friday", "tasks":"fishish work on time"], 
-;2:["day":20220709000000, "name":"saturday", "tasks":"nap"], 
-;3:["day":20220710000000, "name":"sunday", "tasks":"sleep all day"], 
-;4:["day":20220711000000, "name":"monday", "tasks":"go to work"], 
-;5:["day":20220712000000], 
-;6:["day":20220713000000], 
-;7:["day":20220714000000], 
-;8:["day":20220715000000], 
-;9:["day":20220716000000, "tasks":"nap"], 
-;10:["day":20220717000000]
-; (Up to 10 due to loop from fn_fillDays)
-
-
-        
-;#################              T             E              S                 T        ################################
-;#################              T             E              S                 T        ################################
-
-;############################
-    ;Chunjee saves the day!
-;############################
+; ################
+; Functions
+; ################
 
 fn_fillDays(inputArr, weekdayname, activity)
 {
@@ -264,11 +146,11 @@ fn_fillDays(inputArr, weekdayname, activity)
     dayNumber := inputArr[index].day
     burdy := dayNumber "000000"
     loop, 100 {
-       ; msgbox curdy = %curdy% `n burdy = %burdy% `n dayNumber = %dayNumber% `n index = %index%
-        if (curdy = dayNumber){
+       ; msgbox selectedDay = %selectedDay% `n burdy = %burdy% `n dayNumber = %dayNumber% `n index = %index%
+        if (selectedDay = dayNumber){
             ;msgbox gotcha, it's %dayName%
                 }
-                if (burdy = curdy){
+                if (burdy = selectedDay){
                     tstv4 := daysVar[1].tasks
                     ;msgbox tstv4 = %tstv4%
                 }
@@ -327,12 +209,12 @@ msgbox J = %tstv4%
     ; => "Saturday"
 
     Concat := ""
-    ;For Each, Element In tasksVar { 
-    For Each, Element In arrayVar { 
-        If (Concat <> "")  ; Concat is not empty, so add a line feed
+    ;For Each, Element In tasksVar {
+    For Each, Element In arrayVar {
+        if (Concat <> "")  ; Concat is not empty, so add a line feed
             Concat .= "`n" ; Add something at the end of every element. In this case, a new line.
             Concat .= Element
-            
+
     }
     if (Element in arrayVar = "Monday"){
         msgbox Monday
@@ -341,13 +223,13 @@ msgbox J = %tstv4%
 return
 
 ;#####################################
-       ;A way to remove 'past days' 
+       ;A way to remove 'past days'
 ;#####################################
     ; remove days that have past
     currentDays := fn_filterOldDaysFunc(daysVar)
-    ; This will give => 
-    ;[["day":20220709000000, "name":"saturday", "tasks":"do the dishes|mow the yard"], 
-    ;["day":20220710000000, "name":"sunday", "tasks":"sleep all day"], 
+    ; This will give =>
+    ;[["day":20220709000000, "name":"saturday", "tasks":"do the dishes|mow the yard"],
+    ;["day":20220710000000, "name":"sunday", "tasks":"sleep all day"],
     ;["day":20220711000000, "name":"monday", "tasks":"go to work"]]
     return
 
@@ -358,10 +240,6 @@ return
         }
         return inputVar
     }
-
-;#################              T             E              S                 T        ################################
-;#################              T             E              S                 T        ################################
-
 
 ; #################################
 ;           L a b e l s           ;
@@ -375,59 +253,56 @@ Plus2:
 Plus3:
 Plus4:
 Plus5:
-if (Loo = 1){
+if (Loo = 1) {
         DayCheckYear()
     Loop{
-
-        If (Loo = 6){
+        if (Loo = 6){
             ND:=ND-5
             break
         }
-
         NewDY:=NewDY+160
         Gui, MemGUI:Add, Picture, x0 y%NewDY% w200 h150 Disabled hwnd%ND%BGHwnd v%ND%BG g%ND%BG,
         Gui, MemGUI:Add, Picture, x0 yp+149 w200 h10 hwndMinus%ND%Hwnd vMinus%ND% gMinus%ND%,
         Gui, MemGUI:Add, Picture, x0 yp w200 h10 hwndPlus%ND%Hwnd vPlus%ND% gPlus%ND%,
         Gui, MemGUI:Font, S14, Tahoma
 
-        If (Loo = 1){
+        if (Loo = 1){
         ;Below code replace the next 1-line code. Determines the day after today. Used for alligning "(Tomorrow)" to the end of the day name.
         ;Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, %dayday%
-            If (A_WDay = 1){
+            if (A_WDay = 1) {
                 Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Monday
             }
-            Else if (A_WDay = 2){
+            else if (A_WDay = 2) {
                 Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Tuesday
             }
-            Else if (A_WDay = 3){
+            else if (A_WDay = 3) {
                 Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Wednesday
             }
-            Else if (A_WDay = 4){
+            else if (A_WDay = 4) {
                 Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Thursday
             }
-            Else if (A_WDay = 5){
+            else if (A_WDay = 5) {
                 Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Friday
             }
-            Else if (A_WDay = 6){
+            else if (A_WDay = 6) {
                 Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Saturday
             }
-            Else if (A_WDay = 7){
+            else if (A_WDay = 7) {
                 Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Sunday
             }
 
             Gui, MemGUI:Font, S10, Tahoma
-            Gui, MemGUI:Add, Text, x+3 yp+7 h20 BackgroundTrans hwndText%ND%2Hwnd vText%ND%2 gText%ND%2, (Tomorroww)
+            Gui, MemGUI:Add, Text, x+3 yp+7 h20 BackgroundTrans hwndText%ND%2Hwnd vText%ND%2 gText%ND%2, (Tomorrow)
             Gui, MemGUI:Font, S12, Tahoma
-            Gui, MemGUI:Add, Picture, x7 yp+24 w19 h19 hwndChckbx%ND%1Hwnd vChckbx%ND%1 gChckbx%ND%1, 
+            Gui, MemGUI:Add, Picture, x7 yp+24 w19 h19 hwndChckbx%ND%1Hwnd vChckbx%ND%1 gChckbx%ND%1,
             Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%1Hwnd vTxt%ND%1 gTxt%ND%1,
         }
-        
-        If (Loo > 1){
+
+        if (Loo > 1) {
         Gui, MemGUI:Add, Text, x7 yp-145 w110 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, %NDY0%
         ;Gui, MemGUI:Add, Text, x7 yp-145 w110 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, %dayday%
-        
         Gui, MemGUI:Font, S12, Tahoma
-        Gui, MemGUI:Add, Picture, x7 yp+29 w19 h19 hwndChckbx%ND%1Hwnd vChckbx%ND%1 gChckbx%ND%1, 
+        Gui, MemGUI:Add, Picture, x7 yp+29 w19 h19 hwndChckbx%ND%1Hwnd vChckbx%ND%1 gChckbx%ND%1,
         Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%1Hwnd vTxt%ND%1 gTxt%ND%1,
         }
 
@@ -435,8 +310,8 @@ if (Loo = 1){
         Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%2Hwnd vTxt%ND%2 gTxt%ND%2,
         Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%3Hwnd vChckbx%ND%3 gChckbx%ND%3,
         Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%3Hwnd vTxt%ND%3 gTxt%ND%3,
-        Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%4Hwnd vChckbx%ND%4 gChckbx%ND%4, 
-        Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%4Hwnd vTxt%ND%4 gTxt%ND%4, 
+        Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%4Hwnd vChckbx%ND%4 gChckbx%ND%4,
+        Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%4Hwnd vTxt%ND%4 gTxt%ND%4,
         Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%5Hwnd vChckbx%ND%5 gChckbx%ND%5,
         Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%5Hwnd vTxt%ND%5 gTxt%ND%5,
 
@@ -446,43 +321,38 @@ if (Loo = 1){
 }
 
 ; After creating next day, this modifies the new plus and minus buttons.
-NextDay()
-curdy:=curdy+1000000
-    ND--
-        GuiControl, MemGUI:, Plus%ND%,
-        GuiControl, Disable, Plus%ND%
-        GuiControl, Enable, Minus%ND%
-        GuiControl, MemGUI:, Minus%ND%, Icons\Remove.png
-    ND++
-    ;msgbox %dayName%
-        GuiControl, MemGUI:, %ND%BG, Icons\Today.png
-        GuiControl, MemGUI:, Text%ND%1, %dayday%
-    if (ND=1){
-        GuiControl, MemGUI:, Text%ND%2, (Tomorrow)
-    }
-        GuiControl, MemGUI:, Minus%ND%,
-        GuiControl, Disable, Minus%ND%
-        GuiControl, Enable, Plus%ND%
-        GuiControl, MemGUI:, Plus%ND%, Icons\Add.png
-        GuiControl, MemGUI:, Chckbx%ND%1, Icons\ChckbxN.png
-        GuiControl, MemGUI:, Chckbx%ND%2, Icons\ChckbxN.png
-        GuiControl, MemGUI:, Chckbx%ND%3, Icons\ChckbxN.png
-        GuiControl, MemGUI:, Chckbx%ND%4, Icons\ChckbxN.png
-        GuiControl, MemGUI:, Chckbx%ND%5, Icons\ChckbxN.png
-        GuiControl, MemGUI:, Txt%ND%1, "No Results Found."
-        if (curdy = dayNumber){
-        GuiControl, MemGUI:, Txt%ND%2, %tstv5%    
-        }
-        else{
-        GuiControl, MemGUI:, Txt%ND%2, poop
-        }
-        GuiControl, MemGUI:, Txt%ND%3, % tasksVar[4]
-        GuiControl, MemGUI:, Txt%ND%4, % daysVar[6].tasks
-        GuiControl, MemGUI:, Txt%ND%5, % daysVar[13].tasks
-    ND++
-    k++
-    msgbox Curdy = %curdy%`n dayNumber = %dayNumber%
-    ;msgbox NDY%k% = %NDY%%k%
+NextDay()selectedDay
+selectedDay += 1, days
+selectedDay := subStr(selectedDay, 1, 8)
+dayElement := A.find(daysVar, {"day": selectedDay})
+	ND--
+	GuiControl, MemGUI:, Plus%ND%
+	GuiControl, Disable, Plus%ND%
+	GuiControl, Enable, Minus%ND%
+	GuiControl, MemGUI:, Minus%ND%, Icons\Remove.png
+	ND++
+	GuiControl, MemGUI:, %ND%BG, Icons\Today.png
+	GuiControl, MemGUI:, Text%ND%1, %dayday%
+	if (ND = 1) {
+		GuiControl, MemGUI:, Text%ND%2, (Tomorrow)
+	}
+	GuiControl, MemGUI:, Minus%ND%
+	GuiControl, Disable, Minus%ND%
+	GuiControl, Enable, Plus%ND%
+
+	; add all the icons and checkboxes
+	GuiControl, MemGUI:, Plus%ND%, Icons\Add.png
+	for key, value in (strSplit(dayElement.tasks, "|")) {
+		GuiControl, MemGUI:, Chckbx%ND%%key%, Icons\ChckbxN.png
+
+		; add task text
+		GuiControl, MemGUI:, Txt%ND%1, % value
+	}
+
+
+
+	ND++
+	k++
 return
 
 ; ########################
@@ -498,7 +368,7 @@ Minus5:
 ND--
 ND--
     PrevDay()
-    curdy:=curdy-1000000
+    selectedDay += -1, days
 ND--
     GuiControl, MemGUI:, Plus%ND%,
     GuiControl, Disable, Plus%ND%
@@ -526,7 +396,6 @@ ND++
     GuiControl, MemGUI:, Txt%ND%5,
     DayCheckYear()
     k--
-    ;msgbox NDY%k% = %NDY%%k%
 return
 
 ; ####################
@@ -590,7 +459,7 @@ Chckbx01:
     GuiControl, MemGUI:, %A_GuiControl%, % (%ND%1 := !%ND%1) ? "Icons\ChckbxY.png" : "Icons\ChckbxN.png"
 return
 Chckbx02:
-curdy:=curdy-3000000
+selectedDay:=selectedDay-3000000
     GuiControl, MemGUI:, %A_GuiControl%, % (%ND%2 := !%ND%2) ? "Icons\ChckbxY.png" : "Icons\ChckbxN.png"
 return
 Chckbx03:
@@ -733,8 +602,6 @@ return
 ; #################################
 ;Day of the year check (accurate in 2022).
 DayCheckYear(){
-    FormatTime, curdy ,,%curdy%
-    msgbox %curdy%
     OutputDebug, Day/Month %A_DD%/%A_MM%
     OutputDebug, Day of Year %A_YDay%
     OutputDebug, %A_WDay%
@@ -865,7 +732,7 @@ DayCheckYear(){
 }
 
 (DayCheckYear)
-If (A_YDay = Satdy){
+if (A_YDay = Satdy){
 
 }
 
@@ -1042,3 +909,8 @@ Excel_Get(WinTitle:="ahk_class XLMAIN", Excel7#:=1) {
         return "Error accessing the application object."
 }
 
+; #################################
+;         I n c l u d e s
+; #################################
+
+; #include Dates.ahk
