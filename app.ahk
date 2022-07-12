@@ -37,7 +37,7 @@ tasksVar :={1: "Do the dishes", 2: "Clean the fishtank", 3: "Sleep longer", 4: "
 daysVar := [{"day": 20220708, "name": "Friday", "tasks": "This is past-tense for data."}
 		, {"day": 20220709, "name": "Saturday", "tasks": "This is also past-tense for data."}
 		, {"day": 20220710, "name": "Sunday", "tasks": tasksVar[2]}
-		, {"day": 20220711, "name": "Monday", "tasks": "Start of the working week."}
+		, {"day": 20220711, "name": "Monday", "tasks": "Buy icecream"}
 		, {"day": 20220712, "name": "Tuesday", "tasks": "nah"}
 		, {"day": 20220713, "name": "Wednesday", "tasks": "cope|no|touch a computer"}
 		, {"day": 20220714, "name": "Thursday", "tasks": "no"}
@@ -46,6 +46,7 @@ daysVar := [{"day": 20220708, "name": "Friday", "tasks": "This is past-tense for
 
 
 ; Fill days with things I do every week
+daysVar := fn_fillDays(daysVar, "Monday", "Start of the working week")
 daysVar := fn_fillDays(daysVar, "Friday", "End of the week!")
 
 ; sort days
@@ -117,16 +118,6 @@ Gui, MemGUI:Font, S10, Tahoma
 Gui, MemGUI:Add, Text, x+3 yp+7 h20 BackgroundTrans hwndText%ND%2Hwnd vText%ND%2 gText%ND%2, (Today)
 
 Gui, MemGUI:Font, S12, Tahoma
-Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%1Hwnd vChckbx%ND%1 gChckbx%ND%1, Icons\ChckbxN.png
-Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%1Hwnd vTxt%ND%1 gTxt%ND%1, No Results Found.
-Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%2Hwnd vChckbx%ND%2 gChckbx%ND%2, Icons\ChckbxN.png
-Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%2Hwnd vTxt%ND%2 gTxt%ND%2, No Results Found.
-Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%3Hwnd vChckbx%ND%3 gChckbx%ND%3, Icons\ChckbxN.png
-Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%3Hwnd vTxt%ND%3 gTxt%ND%3, No Results Found.
-Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%4Hwnd vChckbx%ND%4 gChckbx%ND%4, Icons\ChckbxN.png
-Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%4Hwnd vTxt%ND%4 gTxt%ND%4, No Results Found.
-Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%5Hwnd vChckbx%ND%5 gChckbx%ND%5, Icons\ChckbxN.png
-Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%5Hwnd vTxt%ND%5 gTxt%ND%5, No Results Found.
 ND++
 Gui, MemGUI:Show, x1721 y0 w200 h1080
 return
@@ -218,8 +209,7 @@ Plus3:
 Plus4:
 Plus5:
 if (Loo = 1) {
-		DayCheckYear()
-	Loop{
+	Loop {
 		if (Loo = 6){
 			ND:=ND-5
 			break
@@ -360,7 +350,6 @@ ND++
 	GuiControl, MemGUI:, Txt%ND%3,
 	GuiControl, MemGUI:, Txt%ND%4,
 	GuiControl, MemGUI:, Txt%ND%5,
-	DayCheckYear()
 	k--
 return
 
@@ -420,8 +409,6 @@ return
 return
 
 Chckbx01:
-	;msgbox % A_WDay
-	DayCheckYear()
 	GuiControl, MemGUI:, %A_GuiControl%, % (%ND%1 := !%ND%1) ? "Icons\ChckbxY.png" : "Icons\ChckbxN.png"
 return
 Chckbx02:
@@ -566,141 +553,7 @@ return
 ; #################################
 ;        V a r i a b l e s
 ; #################################
-;Day of the year check (accurate in 2022).
-DayCheckYear(){
-	OutputDebug, Day/Month %A_DD%/%A_MM%
-	OutputDebug, Day of Year %A_YDay%
-	OutputDebug, %A_WDay%
 
-	dayday:=A_WDay
-	OutputDebug, %dayday%
-	dayday:=A_WDay+1
-	OutputDebug, %dayday%
-
-	loop{
-		c:=b
-		b:=b+7
-
-		Satdy:=1+c
-		Sundy:=2+c
-		Mondy:=3+c
-		Tuedy:=4+c
-		Weddy:=5+c
-		Thudy:=6+c
-		Fridy:=7+c
-
-		if (A_YDay = 1 + c){
-			NDY0 = Saturday
-			NDY1 = Sunday
-			NDY2 = Monday
-			NDY3 = Tuesday
-			NDY4 = Wednesday
-			NDY5 = Thursday
-			NDY6 = Friday
-			OutputDebug, %b%
-			OutputDebug, dy Saturday
-			break
-		}
-		if (A_YDay = 2 + c){
-			NDY0 = Sunday
-			NDY1 = Monday
-			NDY2 = Tuesday
-			NDY3 = Wednesday
-			NDY4 = Thursday
-			NDY5 = Friday
-			NDY6 = Saturday
-			OutputDebug, %b%
-			OutputDebug, dy Sunday
-			break
-		}
-		if (A_YDay = 3 + c){
-			NDY0 = Monday
-			NDY1 = Tuesday
-			NDY2 = Wednesday
-			NDY3 = Thursday
-			NDY4 = Friday
-			NDY5 = Saturday
-			NDY6 = Sunday
-			OutputDebug, %b%
-			OutputDebug, dy Monday
-			;msgbox hello
-			break
-			;msgbox bye
-		}
-		if (A_YDay = 4 + c){
-			NDY0 = Tuesday
-			NDY1 = Wednesday
-			NDY2 = Thursday
-			NDY3 = Friday
-			NDY4 = Saturday
-			NDY5 = Sunday
-			NDY6 = Monday
-			OutputDebug, %b%
-			OutputDebug, dy Tuesday
-			break
-		}
-		if (A_YDay = 5 + c){
-			NDY0 = Wednesday
-			NDY1 = Thursday
-			NDY2 = Friday
-			NDY3 = Saturday
-			NDY4 = Sunday
-			NDY5 = Monday
-			NDY6 = Tuesday
-			OutputDebug, %b%
-			OutputDebug, dy Wednesday
-			break
-		}
-		if (A_YDay = 6 + c){
-			NDY0 = Thursday
-			NDY1 = Friday
-			NDY2 = Saturday
-			NDY3 = Sunday
-			NDY4 = Monday
-			NDY5 = Tuesday
-			NDY6 = Wednesday
-			OutputDebug, %b%
-			OutputDebug, dy Thursday
-			break
-		}
-		if (A_YDay = 7 + c){
-			NDY0 = Friday
-			NDY1 = Saturday
-			NDY2 = Sunday
-			NDY3 = Monday
-			NDY4 = Tuesday
-			NDY5 = Wednesday
-			NDY6 = Thursday
-			OutputDebug, %b%
-			OutputDebug, dy Friday
-			break
-		}
-			;OutputDebug, Checking #%c% to #%b%
-			;OutputDebug, Saturday: %Satdy%
-			;OutputDebug, Sunday: %Sundy%
-			;OutputDebug, Monday: %Mondy%
-			;OutputDebug, Tuesday: %Tuedy%
-			;OutputDebug, Wednesday: %Weddy%
-			;OutputDebug, Thursday: %Thudy%
-			;OutputDebug, Friday: %Fridy%
-			;sleep 500
-		AYDAY0 := A_YDay
-	}
-
-;Example of use.
-			;msgbox NDY0 = %NDY0%
-	if (A_YDay = Satdy){
-		OutputDebug It's Saturday
-	}
-	if (A_YDay = Fridy){
-		OutputDebug It's Friday
-	}
-}
-
-(DayCheckYear)
-if (A_YDay = Satdy){
-
-}
 
 Setdaynum(){
 	;%i% +7 = nw
