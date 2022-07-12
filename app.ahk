@@ -95,15 +95,13 @@ Global tstv4 := 0
 Global index := 1
 Global tstv5 := daysVar[5].tasks
 Global Taday := NDY0
-Setdaynum()
-Namedaynum()
 
 ; #################################
 ;              G U I
 ; #################################
 
 WinGet, active_id, ID, A
-Menu, Tray, Tip, % "Memberry, 'member?"
+Menu, Tray, Tip, % "todo App"
 Gui, MemGUI:+LastFound +ToolWindow -Caption +AlwaysOnTop ; Added
 Gui, MemGUI:Color, 10191A
 WinSet, TransColor, 10191A 221 ; Added
@@ -223,27 +221,6 @@ if (Loo = 1) {
 		if (Loo = 1){
 		;Below code replace the next 1-line code. Determines the day after today. Used for alligning "(Tomorrow)" to the end of the day name.
 		;Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, %dayday%
-			if (A_WDay = 1) {
-				Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Monday
-			}
-			else if (A_WDay = 2) {
-				Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Tuesday
-			}
-			else if (A_WDay = 3) {
-				Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Wednesday
-			}
-			else if (A_WDay = 4) {
-				Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Thursday
-			}
-			else if (A_WDay = 5) {
-				Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Friday
-			}
-			else if (A_WDay = 6) {
-				Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Saturday
-			}
-			else if (A_WDay = 7) {
-				Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, Sunday
-			}
 
 			Gui, MemGUI:Font, S10, Tahoma
 			Gui, MemGUI:Add, Text, x+3 yp+7 h20 BackgroundTrans hwndText%ND%2Hwnd vText%ND%2 gText%ND%2, (Tomorrow)
@@ -275,7 +252,6 @@ if (Loo = 1) {
 }
 
 ; After creating next day, this modifies the new plus and minus buttons.
-NextDay()
 selectedDay += 1, days
 selectedDay := subStr(selectedDay, 1, 8)
 ; FormatTime, daynum, selectedDay, WDay
@@ -323,7 +299,6 @@ Minus4:
 Minus5:
 ND--
 ND--
-	PrevDay()
 	selectedDay += -1, days
 ND--
 	GuiControl, MemGUI:, Plus%ND%,
@@ -434,7 +409,6 @@ return
 return
 
 Chckbx11:
-	DayCheckTom()
 	GuiControl, MemGUI:, %A_GuiControl%, % (%ND%1 := !%ND%1) ? "Icons\ChckbxY.png" : "Icons\ChckbxN.png"
 return
 Chckbx12:
@@ -459,7 +433,6 @@ return
 return
 
 Chckbx21:
-	DayCheckTT()
 	GuiControl, MemGUI:, %A_GuiControl%, % (%ND%1 := !%ND%1) ? "Icons\ChckbxY.png" : "Icons\ChckbxN.png"
 return
 Chckbx22:
@@ -484,7 +457,6 @@ return
 return
 
 Chckbx31:
-	DayCheckTT()
 	GuiControl, MemGUI:, %A_GuiControl%, % (%ND%1 := !%ND%1) ? "Icons\ChckbxY.png" : "Icons\ChckbxN.png"
 return
 Chckbx32:
@@ -509,7 +481,6 @@ return
 return
 
 Chckbx41:
-	DayCheckTT()
 	GuiControl, MemGUI:, %A_GuiControl%, % (%ND%1 := !%ND%1) ? "Icons\ChckbxY.png" : "Icons\ChckbxN.png"
 return
 Chckbx42:
@@ -534,7 +505,6 @@ return
 return
 
 Chckbx51:
-	DayCheckTT()
 	GuiControl, MemGUI:, %A_GuiControl%, % (%ND%1 := !%ND%1) ? "Icons\ChckbxY.png" : "Icons\ChckbxN.png"
 return
 Chckbx52:
@@ -553,136 +523,6 @@ return
 ; #################################
 ;        V a r i a b l e s
 ; #################################
-
-
-Setdaynum(){
-	;%i% +7 = nw
-	if (A_WDay = 1){
-		daynum=1
-		OutputDebug, dw Sunday
-	}
-	if (A_WDay = 2){
-		daynum=2
-		OutputDebug, dw Monday
-	}
-	if (A_WDay = 3){
-		daynum=3
-		OutputDebug, dw Tuesday
-	}
-	if (A_WDay = 4){
-		daynum=4
-		OutputDebug, dw Wednesday
-	}
-	if (A_WDay = 5){
-		daynum=5
-		OutputDebug, dw Thursday
-	}
-	if (A_WDay = 6){
-		daynum=6
-		OutputDebug, dw Friday
-	}
-	if (A_WDay = 7){
-		daynum=7
-		OutputDebug, dw Saturday
-	}
-}
-Namedaynum(){
-	if (daynum = 1){
-		dayday=Sunday
-		OutputDebug, dw Sunday
-	}
-	if (daynum = 2){
-		dayday=Monday
-		OutputDebug, dw Monday
-	}
-	if (daynum = 3){
-		dayday=Tuesday
-		OutputDebug, dw Tuesday
-	}
-	if (daynum = 4){
-		dayday=Wednesday
-		OutputDebug, dw Wednesday
-	}
-	if (daynum = 5){
-		dayday=Thursday
-		OutputDebug, dw Thursday
-	}
-	if (daynum = 6){
-		dayday=Friday
-		OutputDebug, dw Friday
-	}
-	if (daynum = 7){
-		dayday=Saturday
-		OutputDebug, dw Saturday
-	}
-}
-
-NextDay(){
-	if (daynum=7){
-		daynum=1
-	}
-	else{
-		daynum++
-	}
-	Namedaynum()
-}
-PrevDay(){
-	if (daynum=0){
-		daynum=6
-	}
-	else{
-		daynum--
-	}
-	Namedaynum()
-}
-
-DayCheckTom(){
-	if (A_WDay = 1 + 6){
-		OutputDebug, Sunday
-	}
-	if (A_WDay = 2 - 1){
-		OutputDebug, Monday
-	}
-	if (A_WDay = 3 - 1){
-		OutputDebug, Tuesday
-	}
-	if (A_WDay = 4 - 1){
-		OutputDebug, Wednesday
-	}
-	if (A_WDay = 5 - 1){
-		OutputDebug, Thursday
-	}
-	if (A_WDay = 6 - 1){
-		OutputDebug, Friday
-	}
-	if (A_WDay = 7 - 1){
-		OutputDebug, Saturday
-	}
-}
-
-DayCheckTT(){
-	if (A_WDay = 1 + 6){
-		OutputDebug, Sunday
-	}
-	if (A_WDay = 2 - 1){
-		OutputDebug, Monday
-	}
-	if (A_WDay = 3 - 1){
-		OutputDebug, Tuesday
-	}
-	if (A_WDay = 4 - 1){
-		OutputDebug, Wednesday
-	}
-	if (A_WDay = 5 - 1){
-		OutputDebug, Thursday
-	}
-	if (A_WDay = 6 - 1){
-		OutputDebug, Friday
-	}
-	if (A_WDay = 7 - 1){
-		OutputDebug, Saturday
-	}
-}
 
 ; ################
 ;      O n e
