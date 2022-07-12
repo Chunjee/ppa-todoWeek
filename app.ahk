@@ -41,33 +41,32 @@ daysVar := [{"day": 20220708, "name": "Friday", "tasks": "This is past-tense for
 		, {"day": 20220712, "name": "Tuesday", "tasks": "nah"}
 		, {"day": 20220713, "name": "Wednesday", "tasks": "cope|no|touch a computer"}
 		, {"day": 20220714, "name": "Thursday", "tasks": "no"}
-		, {"day": 20220715, "name": "Friday", "tasks": "End of the week!"}]
+		, {"day": 20220715, "name": "Friday", "tasks": "Grab paycheck"}]
 
 
-allFridaysCopy := A.filter(daysVar, {"name": "Friday"})
-OutputDebug, % allFridaysCopy.count()
 
-fridaysTask := A.map(allFridaysCopy, "tasks")
-OutputDebug, % fridaysTask.tasks
-
+; Fill days with things I do every week
+daysVar := fn_fillDays(daysVar, "Friday", "End of the week!")
 
 ; sort days
 daysVar := A.sortBy(daysVar, "day")
 
+; remove days that have past
+currentDays := fn_filterOldDaysFunc(daysVar)
+
 ; user adds activity to exact day
-userInput := "20220715"
-activity := "visit bank"
-modifiableItem := A.find(daysVar, {"day": userInput})
-if (modifiableItem != false) {
-	; remember the items location for later replacement
-	index := A.indexOf(daysVar, modifiableItem)
-	modifiableItem.tasks .=  "|" activity
-	; show the modified item before replacing in data storage
-	A.print(modifiableItem)
-	; replace in data
-	daysVar[index] := modifiableItem
-}
-A.print(daysVar)
+; userInput := "20220715"
+; activity := "visit bank"
+; modifiableItem := A.find(daysVar, {"day": userInput})
+; if (modifiableItem != false) {
+; 	; remember the items location for later replacement
+; 	index := A.indexOf(daysVar, modifiableItem)
+; 	modifiableItem.tasks .=  "|" activity
+; 	; show the modified item before replacing in data storage
+; 	A.print(modifiableItem)
+; 	; replace in data
+; 	daysVar[index] := modifiableItem
+; }
 
 ; #################################
 ;           G l o b a l s
@@ -143,7 +142,7 @@ fn_fillDays(inputArr, weekdayname, activity)
 
 	; get the first item in the array
 	dayNumber := inputArr[index].day
-	loop, 10 {
+	loop, 30 {
 		dayNumber += 1, days
 		; make newest encountered day an object so we can add data
 		if (!isObject(inputArr[index])) {
@@ -194,15 +193,8 @@ msgbox J = %tstv4%
 	MsgBox, %Concat%
 return
 
-;#####################################
-	   ;A way to remove 'past days'
-;#####################################
-	; remove days that have past
-	currentDays := fn_filterOldDaysFunc(daysVar)
-	; This will give =>
-	;[["day":20220709000000, "name":"saturday", "tasks":"do the dishes|mow the yard"],
-	;["day":20220710000000, "name":"sunday", "tasks":"sleep all day"],
-	;["day":20220711000000, "name":"monday", "tasks":"go to work"]]
+
+
 	return
 
 	fn_filterOldDaysFunc(inputVar)
@@ -293,9 +285,11 @@ if (Loo = 1) {
 }
 
 ; After creating next day, this modifies the new plus and minus buttons.
-NextDay()selectedDay
+NextDay()
 selectedDay += 1, days
 selectedDay := subStr(selectedDay, 1, 8)
+; FormatTime, daynum, selectedDay, WDay
+
 dayElement := A.find(daysVar, {"day": selectedDay})
 	ND--
 	GuiControl, MemGUI:, Plus%ND%
@@ -318,7 +312,7 @@ dayElement := A.find(daysVar, {"day": selectedDay})
 		GuiControl, MemGUI:, Chckbx%ND%%key%, Icons\ChckbxN.png
 
 		; add task text
-		GuiControl, MemGUI:, Txt%ND%1, % value
+		GuiControl, MemGUI:, Txt%ND%%A_Index%, % value
 	}
 
 
