@@ -10,28 +10,6 @@ SetBatchLines, -1
 #Include biga.ahk\export.ahk
 A := new biga() ; requires https://github.com/biga-ahk/biga.ahk
 
-
-OutputDebug, Script Start
-Global selectedDay := 0
-Global burdy := 0
-FormatTime, selectedDay ,,yyyyMMdd
-burdy := selectedDay
-;FormatTime, TimeString, 20050423220133, dddd MMMM d, yyyy hh:mm:ss tt
-;MsgBox %selectedDay%
-;msgbox YYYYMMDDHH24MISS = %YYYYMMDDHH24MISS%
-Global weekdayname := 0
-Global dayName := 0
-Global dayNumber := 0
-Global tstv1 := 20220706000000
-Global tstv2 := 20220712
-Global tstv3 := 20220700
-Global matchingEntry := 0
-Global fridaysVar := 0
-; #################################
-;           A r r a y s
-; #################################
-
-; Now to figure out how to efficiently push the objects/elements to each 'next' node, if there is something already in the first.
 tasksVar :={1: "Do the dishes", 2: "Clean the fishtank", 3: "Sleep longer", 4: "Do some coding", 5: "Start the working week", 6: "Gaming day, every Saturday.", 7: "Play the violin"}
 
 daysVar := [{"day": 20220708, "name": "Friday", "tasks": "This is past-tense for data."}
@@ -43,17 +21,14 @@ daysVar := [{"day": 20220708, "name": "Friday", "tasks": "This is past-tense for
 		, {"day": 20220714, "name": "Thursday", "tasks": "no"}
 		, {"day": 20220715, "name": "Friday", "tasks": "Grab paycheck"}]
 
-
+; remove days that have past
+daysVar := fn_filterOldDaysFunc(daysVar)
 
 ; Fill days with things I do every week
 daysVar := fn_fillDays(daysVar, "Monday", "Start of the working week")
 daysVar := fn_fillDays(daysVar, "Friday", "End of the week!")
 
-; sort days
-daysVar := A.sortBy(daysVar, "day")
 
-; remove days that have past
-currentDays := fn_filterOldDaysFunc(daysVar)
 
 ; user adds activity to exact day
 ; userInput := "20220715"
@@ -85,7 +60,6 @@ Global Weddy := 0
 Global Thudy := 0
 Global Fridy := 0
 Global daynum := 0
-Global dayday := 0
 Global NewDY := -1
 Global ND := 0
 Global Loo := 1
@@ -124,6 +98,13 @@ return
 ; ################
 ; Functions
 ; ################
+fn_filterOldDaysFunc(inputArr)
+{
+	while (inputArr[1].day < A_YYYY A_MM A_DD) {
+		inputArr.removeAt(1)
+	}
+	return inputArr
+}
 
 fn_fillDays(inputArr, weekdayname, activity)
 {
@@ -133,12 +114,12 @@ fn_fillDays(inputArr, weekdayname, activity)
 	dayNumber := inputArr[index].day
 	loop, 30 {
 		dayNumber += 1, days
+		; set the day number back to YYYYMMDD format
+		dayNumber := subStr(dayNumber, 1, 8)
 		; make newest encountered day an object so we can add data
 		if (!isObject(inputArr[index])) {
 			inputArr[index] := {}
 		}
-		; set the day number back to YYYYMMDD format
-		dayNumber := subStr(dayNumber, 1, 8)
 		inputArr[index].day := dayNumber
 		; set the day human readable name
 		FormatTime, dayName, % dayNumber, dddd
@@ -181,19 +162,6 @@ msgbox J = %tstv4%
 	}
 	MsgBox, %Concat%
 return
-
-
-
-	return
-
-	fn_filterOldDaysFunc(inputVar)
-	{
-		while (inputVar[1].day < A_YYYY A_MM A_DD "000000") {
-			inputVar.removeAt(1)
-		}
-		return inputVar
-	}
-
 ; #################################
 ;           L a b e l s           ;
 ; #################################
@@ -206,6 +174,9 @@ Plus2:
 Plus3:
 Plus4:
 Plus5:
+selectedDay += 1, days
+selectedDay := subStr(selectedDay, 1, 8)
+dayElement := A.find(daysVar, {"day": selectedDay})
 if (Loo = 1) {
 	Loop {
 		if (Loo = 6){
@@ -219,9 +190,7 @@ if (Loo = 1) {
 		Gui, MemGUI:Font, S14, Tahoma
 
 		if (Loo = 1){
-		;Below code replace the next 1-line code. Determines the day after today. Used for alligning "(Tomorrow)" to the end of the day name.
-		;Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, %dayday%
-
+			Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, % dayElement.name
 			Gui, MemGUI:Font, S10, Tahoma
 			Gui, MemGUI:Add, Text, x+3 yp+7 h20 BackgroundTrans hwndText%ND%2Hwnd vText%ND%2 gText%ND%2, (Tomorrow)
 			Gui, MemGUI:Font, S12, Tahoma
@@ -230,7 +199,7 @@ if (Loo = 1) {
 		}
 
 		if (Loo > 1) {
-		Gui, MemGUI:Add, Text, x7 yp-145 w110 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, %NDY0%
+		Gui, MemGUI:Add, Text, x7 yp-145 w110 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, % dayElement.name
 		;Gui, MemGUI:Add, Text, x7 yp-145 w110 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, %dayday%
 		Gui, MemGUI:Font, S12, Tahoma
 		Gui, MemGUI:Add, Picture, x7 yp+29 w19 h19 hwndChckbx%ND%1Hwnd vChckbx%ND%1 gChckbx%ND%1,
@@ -245,18 +214,12 @@ if (Loo = 1) {
 		Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%4Hwnd vTxt%ND%4 gTxt%ND%4,
 		Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%5Hwnd vChckbx%ND%5 gChckbx%ND%5,
 		Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%5Hwnd vTxt%ND%5 gTxt%ND%5,
-
 		ND++
 		Loo++
 	}
 }
 
 ; After creating next day, this modifies the new plus and minus buttons.
-selectedDay += 1, days
-selectedDay := subStr(selectedDay, 1, 8)
-; FormatTime, daynum, selectedDay, WDay
-
-dayElement := A.find(daysVar, {"day": selectedDay})
 	ND--
 	GuiControl, MemGUI:, Plus%ND%
 	GuiControl, Disable, Plus%ND%
@@ -264,7 +227,7 @@ dayElement := A.find(daysVar, {"day": selectedDay})
 	GuiControl, MemGUI:, Minus%ND%, Icons\Remove.png
 	ND++
 	GuiControl, MemGUI:, %ND%BG, Icons\Today.png
-	GuiControl, MemGUI:, Text%ND%1, %dayday%
+	GuiControl, MemGUI:, Text%ND%1, % dayElement.name
 	if (ND = 1) {
 		GuiControl, MemGUI:, Text%ND%2, (Tomorrow)
 	}
@@ -280,8 +243,6 @@ dayElement := A.find(daysVar, {"day": selectedDay})
 		; add task text
 		GuiControl, MemGUI:, Txt%ND%%A_Index%, % value
 	}
-
-
 
 	ND++
 	k++
@@ -538,35 +499,6 @@ return
 ;     T h r e e
 ; ################
 
-
-; ################
-;    E x c e l
-; ################
-
-;The code to output data from AHK to XLS
-Excel_Get(WinTitle:="ahk_class XLMAIN", Excel7#:=1) {
-	static h := DllCall("LoadLibrary", "Str", "oleacc", "Ptr")
-	WinGetClass, WinClass, %WinTitle%
-	if !(WinClass == "XLMAIN")
-		return "Window class mismatch."
-	ControlGet, hwnd, hwnd,, Excel7%Excel7#%, %WinTitle%
-	if (ErrorLevel)
-		return "Error accessing the control hWnd."
-	VarSetCapacity(IID_IDispatch, 16)
-	NumPut(0x46000000000000C0, NumPut(0x0000000000020400, IID_IDispatch, "Int64"), "Int64")
-	if DllCall("oleacc\AccessibleObjectFromWindow", "Ptr", hWnd, "UInt", -16, "Ptr", &IID_IDispatch, "Ptr*", pacc) != 0
-		return "Error calling AccessibleObjectFromWindow."
-	window := ComObject(9, pacc, 1)
-	if ComObjType(window) != 9
-		return "Error wrapping the window object."
-	Loop
-		try return window.Application
-	catch e
-		if SubStr(e.message, 1, 10) = "0x80010001"
-		ControlSend, Excel7%Excel7#%, {Esc}, %WinTitle%
-	else
-		return "Error accessing the application object."
-}
 
 ; #################################
 ;         I n c l u d e s
