@@ -54,8 +54,6 @@ CoordMode, Pixel, Screen
 Global NewDY := -1
 Global ND := 0
 Global Loo := 1
-Global k := 0
-Global tstv4 := 0
 ;Global
 Global index := 1
 
