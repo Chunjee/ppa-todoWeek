@@ -51,15 +51,6 @@ daysVar := fn_fillDays(daysVar, "Friday", "End of the week!")
 #SingleInstance,Force
 #Persistent
 CoordMode, Pixel, Screen
-Global b := 0
-Global Satdy := 0
-Global Sundy := 0
-Global Mondy := 0
-Global Tuedy := 0
-Global Weddy := 0
-Global Thudy := 0
-Global Fridy := 0
-Global daynum := 0
 Global NewDY := -1
 Global ND := 0
 Global Loo := 1
@@ -67,8 +58,6 @@ Global k := 0
 Global tstv4 := 0
 ;Global
 Global index := 1
-Global tstv5 := daysVar[5].tasks
-Global Taday := NDY0
 
 ; #################################
 ;              G U I
