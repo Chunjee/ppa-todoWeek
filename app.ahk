@@ -22,12 +22,10 @@ daysVar := [{"day": 20220708, "name": "Friday", "tasks": "This is past-tense for
 
 ; remove days that have past
 daysVar := fn_filterOldDaysFunc(daysVar)
-A.print(daysVar)
 
 ; Fill days with things I do every week
 daysVar := fn_fillDays(daysVar, "Monday", "Start of the working week")
 daysVar := fn_fillDays(daysVar, "Friday", "End of the week!")
-A.print(daysVar)
 
 
 
@@ -132,31 +130,6 @@ fn_fillDays(inputArr, weekdayname, activity)
 	return inputArr
 }
 
-;################
-;An example of use
-;################
-^E::
-msgbox J = %tstv4%
-	arrayVar := {1: "Monday", 9: "Friday", 16: "Saturday", 23: "Saturday"}
-	;msgbox, % arrayVar[16]
-	; => "Saturday"
-
-	;msgbox, % arrayVar.16
-	; => "Saturday"
-
-	Concat := ""
-	;For Each, Element In commonTasks {
-	For Each, Element In arrayVar {
-		if (Concat <> "")  ; Concat is not empty, so add a line feed
-			Concat .= "`n" ; Add something at the end of every element. In this case, a new line.
-			Concat .= Element
-
-	}
-	if (Element in arrayVar = "Monday"){
-		msgbox Monday
-	}
-	MsgBox, %Concat%
-return
 ; #################################
 ;           L a b e l s           ;
 ; #################################
