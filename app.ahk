@@ -1,5 +1,4 @@
 ; ################################# ################################# #################################
-;                           				  N  o  t  e  s
 ; Make GUI appear on Screen one. Maybe top-right corner. Under everything, but above desktop.
 ; After x time, make GUI on top of everything until clicked.
 ; ################################# ################################# #################################
@@ -10,11 +9,11 @@ SetBatchLines, -1
 #Include biga.ahk\export.ahk
 A := new biga() ; requires https://github.com/biga-ahk/biga.ahk
 
-tasksVar :={1: "Do the dishes", 2: "Clean the fishtank", 3: "Sleep longer", 4: "Do some coding", 5: "Start the working week", 6: "Gaming day, every Saturday.", 7: "Play the violin"}
+commonTasks := {1: "Do the dishes", 2: "Clean the fishtank", 3: "Sleep longer", 4: "Do some coding", 5: "Start the working week", 6: "Gaming day, every Saturday.", 7: "Play the violin"}
 
 daysVar := [{"day": 20220708, "name": "Friday", "tasks": "This is past-tense for data."}
 		, {"day": 20220709, "name": "Saturday", "tasks": "This is also past-tense for data."}
-		, {"day": 20220710, "name": "Sunday", "tasks": tasksVar[2]}
+		, {"day": 20220710, "name": "Sunday", "tasks": commonTasks[2]}
 		, {"day": 20220711, "name": "Monday", "tasks": "Buy icecream"}
 		, {"day": 20220712, "name": "Tuesday", "tasks": "nah"}
 		, {"day": 20220713, "name": "Wednesday", "tasks": "cope|no|touch a computer"}
@@ -23,10 +22,12 @@ daysVar := [{"day": 20220708, "name": "Friday", "tasks": "This is past-tense for
 
 ; remove days that have past
 daysVar := fn_filterOldDaysFunc(daysVar)
+A.print(daysVar)
 
 ; Fill days with things I do every week
 daysVar := fn_fillDays(daysVar, "Monday", "Start of the working week")
 daysVar := fn_fillDays(daysVar, "Friday", "End of the week!")
+A.print(daysVar)
 
 
 
@@ -54,8 +55,7 @@ CoordMode, Pixel, Screen
 Global NewDY := -1
 Global ND := 0
 Global Loo := 1
-;Global
-Global index := 1
+Global superIndex := 1
 
 ; #################################
 ;              G U I
@@ -95,15 +95,20 @@ fn_filterOldDaysFunc(inputArr)
 
 fn_fillDays(inputArr, weekdayname, activity)
 {
-	index := 1
+	; prepare
+	; start from todays date
+	dayNumber := A_Now
+	dayNumber := subStr(dayNumber, 1, 8)
+	; find todays date index or create one
+	index := biga.findIndex(inputArr, {"day": dayNumber})
+	if (index == -1) {
+		inputArr.insertAt(1, {"day": dayNumber})
+		index := 1
+	}
 
-	; get the first item in the array
-	dayNumber := inputArr[index].day
+	; create
 	loop, 30 {
-		dayNumber += 1, days
-		; set the day number back to YYYYMMDD format
-		dayNumber := subStr(dayNumber, 1, 8)
-		; make newest encountered day an object so we can add data
+		; make encountered day an object so we can add data if not an object already
 		if (!isObject(inputArr[index])) {
 			inputArr[index] := {}
 		}
@@ -120,6 +125,9 @@ fn_fillDays(inputArr, weekdayname, activity)
 			}
 		}
 		index++
+		; add a day and use YYYYMMDD format
+		dayNumber += 1, days
+		dayNumber := subStr(dayNumber, 1, 8)
 	}
 	return inputArr
 }
@@ -137,7 +145,7 @@ msgbox J = %tstv4%
 	; => "Saturday"
 
 	Concat := ""
-	;For Each, Element In tasksVar {
+	;For Each, Element In commonTasks {
 	For Each, Element In arrayVar {
 		if (Concat <> "")  ; Concat is not empty, so add a line feed
 			Concat .= "`n" ; Add something at the end of every element. In this case, a new line.
@@ -167,31 +175,18 @@ dayElement := A.find(daysVar, {"day": selectedDay})
 if (Loo = 1) {
 	Loop {
 		if (Loo = 6){
-			ND:=ND-5
+			ND := ND - 5
 			break
 		}
-		NewDY:=NewDY+160
+		NewDY := NewDY + 160
 		Gui, MemGUI:Add, Picture, x0 y%NewDY% w200 h150 Disabled hwnd%ND%BGHwnd v%ND%BG g%ND%BG,
 		Gui, MemGUI:Add, Picture, x0 yp+149 w200 h10 hwndMinus%ND%Hwnd vMinus%ND% gMinus%ND%,
 		Gui, MemGUI:Add, Picture, x0 yp w200 h10 hwndPlus%ND%Hwnd vPlus%ND% gPlus%ND%,
-		Gui, MemGUI:Font, S14, Tahoma
 
-		if (Loo = 1){
-			Gui, MemGUI:Add, Text, x7 yp-145 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, % dayElement.name
-			Gui, MemGUI:Font, S10, Tahoma
-			Gui, MemGUI:Add, Text, x+3 yp+7 h20 BackgroundTrans hwndText%ND%2Hwnd vText%ND%2 gText%ND%2, (Tomorrow)
-			Gui, MemGUI:Font, S12, Tahoma
-			Gui, MemGUI:Add, Picture, x7 yp+24 w19 h19 hwndChckbx%ND%1Hwnd vChckbx%ND%1 gChckbx%ND%1,
-			Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%1Hwnd vTxt%ND%1 gTxt%ND%1,
-		}
-
-		if (Loo > 1) {
 		Gui, MemGUI:Add, Text, x7 yp-145 w110 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, % dayElement.name
-		;Gui, MemGUI:Add, Text, x7 yp-145 w110 h25 BackgroundTrans hwndText%ND%1Hwnd vText%ND%1 gText%ND%1, %dayday%
 		Gui, MemGUI:Font, S12, Tahoma
 		Gui, MemGUI:Add, Picture, x7 yp+29 w19 h19 hwndChckbx%ND%1Hwnd vChckbx%ND%1 gChckbx%ND%1,
 		Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%1Hwnd vTxt%ND%1 gTxt%ND%1,
-		}
 
 		Gui, MemGUI:Add, Picture, x7 yp+23 w19 h19 hwndChckbx%ND%2Hwnd vChckbx%ND%2 gChckbx%ND%2,
 		Gui, MemGUI:Add, Text, x30 yp w180 h20 BackgroundTrans hwndTxt%ND%2Hwnd vTxt%ND%2 gTxt%ND%2,
